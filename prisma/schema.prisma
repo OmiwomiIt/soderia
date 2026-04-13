@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Cliente {
+  id           Int           @id @default(autoincrement())
+  nombre       String
+  email        String?
+  telefono     String?
+  direccion    String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  presupuestos Presupuesto[]
+}
+
+model Producto {
+  id           Int                 @id @default(autoincrement())
+  nombre       String
+  descripcion  String?
+  tipo         TipoProducto
+  presentacion String
+  precio       Float
+  activo       Boolean             @default(true)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  detalles     DetallePresupuesto[]
+}
+
+enum TipoProducto {
+  AGUA
+  SODA
+}
+
+model Presupuesto {
+  id            Int                 @id @default(autoincrement())
+  numero        String              @unique
+  clienteId     Int
+  cliente       Cliente            @relation(fields: [clienteId], references: [id])
+  subtotal      Float
+  iva          Float
+  total        Float
+  observaciones String?
+  estado       EstadoPresupuesto   @default(BORRADOR)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  detalles     DetallePresupuesto[]
+}
+
+enum EstadoPresupuesto {
+  BORRADOR
+  ENVIADO
+  ACEPTADO
+  RECHAZADO
+}
+
+model DetallePresupuesto {
+  id             Int         @id @default(autoincrement())
+  presupuestoId Int
+  presupuesto   Presupuesto @relation(fields: [presupuestoId], references: [id], onDelete: Cascade)
+  productoId     Int
+  producto       Producto    @relation(fields: [productoId], references: [id])
+  cantidad       Int
+  precioUnitario Float
+  total          Float
+}
