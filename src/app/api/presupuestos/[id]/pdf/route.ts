@@ -29,7 +29,7 @@ export async function GET(
       telefono: presupuesto.cliente.telefono,
       direccion: presupuesto.cliente.direccion,
     },
-    detalles: presupuesto.detalles.map(d => ({
+    detalles: presupuesto.detalles.map((d: any) => ({
       cantidad: d.cantidad,
       producto: {
         nombre: d.producto.nombre,

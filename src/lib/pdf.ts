@@ -59,7 +59,7 @@ export function generatePDF(data: PresupuestoData): jsPDF {
   if (data.cliente.telefono) doc.text(`Teléfono: ${data.cliente.telefono}`, 14, 67);
   if (data.cliente.direccion) doc.text(`Dirección: ${data.cliente.direccion}`, 14, 73);
   
-  const tableData = data.detalles.map(d => [
+  const tableData = data.detalles.map((d: DetalleItem) => [
     d.producto.nombre,
     d.producto.presentacion,
     d.cantidad.toString(),
