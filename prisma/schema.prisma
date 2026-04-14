@@ -6,12 +6,33 @@ datasource db {
   provider = "postgresql"
 }
 
+model Usuario {
+  id           Int          @id @default(autoincrement())
+  email       String       @unique
+  password    String
+  nombre      String
+  rol         RolUsuario    @default(USUARIO)
+  activo      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  productos   Producto[]
+  clientes    Cliente[]
+  presupuestos Presupuesto[]
+}
+
+enum RolUsuario {
+  ADMIN
+  USUARIO
+}
+
 model Cliente {
   id           Int           @id @default(autoincrement())
   nombre       String
   email        String?
   telefono     String?
   direccion    String?
+  usuarioId    Int
+  usuario      Usuario       @relation(fields: [usuarioId], references: [id])
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   presupuestos Presupuesto[]
@@ -23,11 +44,13 @@ model Producto {
   descripcion  String?
   tipo         TipoProducto
   presentacion String
-  precio       Float
-  activo       Boolean             @default(true)
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
-  detalles     DetallePresupuesto[]
+  precio      Float
+  activo      Boolean             @default(true)
+  usuarioId   Int
+  usuario     Usuario             @relation(fields: [usuarioId], references: [id])
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  detalles    DetallePresupuesto[]
 }
 
 enum TipoProducto {
@@ -40,14 +63,16 @@ model Presupuesto {
   numero        String              @unique
   clienteId     Int
   cliente       Cliente            @relation(fields: [clienteId], references: [id])
+  usuarioId    Int
+  usuario      Usuario            @relation(fields: [usuarioId], references: [id])
   subtotal      Float
   iva          Float
   total        Float
   observaciones String?
   estado       EstadoPresupuesto   @default(BORRADOR)
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
-  detalles     DetallePresupuesto[]
+  createdAt    DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  detalles    DetallePresupuesto[]
 }
 
 enum EstadoPresupuesto {

@@ -6,17 +6,34 @@
 - **Type**: Aplicación web fullstack
 - **Core functionality**: Generación de presupuestos para empresa de distribución de agua embotellada y soda, con exportación a PDF y almacenamiento para consultas futuras
 - **Target users**: Empresa de distribución de agua embotellada y soda
+- **Production URL**: https://soderia.vercel.app/
+- **GitHub**: https://github.com/OmiwomiIt/soderia
 
 ## 2. Tech Stack
 
-- **Frontend**: Next.js 14 (App Router) + React + TypeScript
+- **Frontend**: Next.js 16 (App Router) + React + TypeScript
 - **Styling**: Tailwind CSS
 - **Backend**: API Routes de Next.js
-- **Base de datos**: SQLite con Prisma ORM
+- **Base de datos**: Neon PostgreSQL con Prisma ORM
 - **PDF**: jsPDF + jspdf-autotable
 - **UI Components**: shadcn/ui
 
-## 3. UI/UX Specification
+## 3. Deployment
+
+### Vercel Configuration
+
+El deploy en Vercel requiere:
+1. **DATABASE_URL** configurado en Environment Variables
+2. Script `postinstall` en `package.json` para generar Prisma Client
+3. Configuración en `vercel.json` para postinstall
+
+### Connection String Neon
+
+```
+postgresql://neondb_owner:npg_QcaTsu1POCr9@ep-aged-cloud-anjztkxc.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require
+```
+
+## 4. UI/UX Specification
 
 ### Layout Structure
 
@@ -91,7 +108,7 @@
 - Card centered
 - Close button top-right
 
-## 4. Data Models
+## 5. Data Models
 
 ### Cliente
 ```prisma
@@ -136,10 +153,10 @@ model Presupuesto {
   clienteId     Int
   cliente       Cliente     @relation(fields: [clienteId], references: [id])
   subtotal      Float      // = total (sin IVA)
-  iva          Float      // = 0 (IVA incluido en precio)
-  total        Float
+  iva           Float      // = 0 (IVA incluido en precio)
+  total         Float
   observaciones String?
-  estado       EstadoPresupuesto @default(BORRADOR)
+  estado        EstadoPresupuesto @default(BORRADOR)
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   detalles     DetallePresupuesto[]
@@ -167,25 +184,25 @@ model DetallePresupuesto {
 }
 ```
 
-## 5. Funcionalidades
+## 6. Funcionalidades
 
-### 5.1 Dashboard
+### 6.1 Dashboard
 - Resumen de presupuestos del mes
 - Recent presupuestos rápido acceso
 - Stats: Total presupuestos, pendientes, enviados
 
-### 5.2 Gestión de Clientes
+### 6.2 Gestión de Clientes
 - **Listar**: Tabla con búsqueda y filtros
 - **Crear**: Modal formulario con validación
 - **Editar**: Mismo formulario
 - **Eliminar**: Confirmación
 
-### 5.3 Gestión de Productos
+### 6.3 Gestión de Productos
 - **Listar**: Filtrar por tipo (Agua/Soda)
 - **Crear/Editar**: Nombre, tipo, presentación, precio
 - **Activar/Desactivar**: Soft delete
 
-### 5.4 Generación de Presupuestos
+### 6.4 Generación de Presupuestos
 - **Nuevo presupuesto**:
   1. Seleccionar cliente (buscador)
   2. Agregar productos (buscador + cantidad)
@@ -196,7 +213,7 @@ model DetallePresupuesto {
 - **Editar presupuesto** (solo estados BORRADOR o RECHAZADO)
 - **Cambiar estado**: Con historial
 
-### 5.5 Exportar a PDF
+### 6.5 Exportar a PDF
 - **Formato PDF profesional**:
   - Logo empresa
   - Datos presupuesto número y fecha
@@ -206,13 +223,13 @@ model DetallePresupuesto {
   - Observaciones
   - Pie de página
 
-### 5.6 Historial y Consultas
+### 6.6 Historial y Consultas
 - Lista de todos los presupuestos
 - Filtrar por estado, cliente, fecha
 - Ver detalle completo
 - Re-enviar PDF
 
-## 6. Pages Structure
+## 7. Pages Structure
 
 ```
 /                       -> Dashboard
@@ -228,31 +245,31 @@ model DetallePresupuesto {
 /presupuestos/[id]/edit -> Editar presupuesto
 ```
 
-## 7. API Endpoints
+## 8. API Endpoints
 
 ```
 GET    /api/clientes           -> Listar clientes
-POST   /api/clientes          -> Crear cliente
+POST   /api/clientes           -> Crear cliente
 GET    /api/clientes/[id]      -> Get cliente
-PUT    /api/clientes/[id]     -> Actualizar cliente
+PUT    /api/clientes/[id]      -> Actualizar cliente
 DELETE /api/clientes/[id]     -> Eliminar cliente
 
-GET    /api/productos         -> Listar productos
+GET    /api/productos          -> Listar productos
 POST   /api/productos         -> Crear producto
-GET    /api/productos/[id]   -> Get producto
-PUT    /api/productos/[id]    -> Actualizar producto
-DELETE /api/productos/[id]   -> Eliminar producto
+GET    /api/productos/[id]    -> Get producto
+PUT    /api/productos/[id]     -> Actualizar producto
+DELETE /api/productos/[id]    -> Eliminar producto
 
 GET    /api/presupuestos      -> Listar presupuestos
-POST   /api/presupuestos      -> Crear presupuesto
+POST   /api/presupuestos     -> Crear presupuesto
 GET    /api/presupuestos/[id] -> Get presupuesto
-PUT    /api/presupuestos/[id]-> Actualizar presupuesto
+PUT    /api/presupuestos/[id] -> Actualizar presupuesto
 DELETE /api/presupuestos/[id]-> Eliminar presupuesto
 
 GET    /api/presupuestos/[id]/pdf -> Generar PDF
 ```
 
-## 8. Acceptance Criteria
+## 9. Acceptance Criteria
 
 1. ✅ Dashboard muestra estadísticas del negocio
 2. ✅ CRUD completo de clientes con validación
@@ -263,9 +280,26 @@ GET    /api/presupuestos/[id]/pdf -> Generar PDF
 7. ✅ Historial de cambios de estado
 8. ✅ Diseño responsive (mobile y desktop)
 9. ✅ Interfaz intuitiva y profesional
-10. ✅ Datos persistidos en SQLite
+10. ✅ Datos persistidos en Neon PostgreSQL
+11. ✅ Deploy en Vercel funcionando
 
-## 9. Seed Data
+## 10. Problemas Conocidos
+
+### Prisma 7.x en Vercel
+
+**Problema**: Prisma 7.x no exporta `PrismaClient` ni enums directamente en builds de Vercel (funciona localmente).
+
+**Solución aplicada**:
+1. Script `postinstall` en `package.json` que regenera el cliente
+2. Configuración `vercel.json` con `"postInstallPatchPrisma": true`
+
+### DATABASE_URL en Vercel
+
+**Problema**: La app retorna error 500 si no está configurada la variable DATABASE_URL.
+
+**Solución**: Configurar en Vercel → Settings → Environment Variables.
+
+## 11. Seed Data
 
 ### Productos iniciales (precios en Pesos Argentinos - $AR)
 - Agua purificada 500ml - $AR 500
@@ -278,5 +312,5 @@ GET    /api/presupuestos/[id]/pdf -> Generar PDF
 
 ### Notas técnicas
 - Moneda: Pesos Argentinos ($AR)
-- IVA: Incluido en precios (no se muestra separately)
-- Base de datos: SQLite local
+- IVA: Incluido en precios (no se muestra separadamente)
+- Base de datos: Neon PostgreSQLcloud

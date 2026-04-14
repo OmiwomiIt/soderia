@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getUserFromRequest } from '@/lib/auth';
 
-async function generateNumero() {
+async function generateNumero(usuarioId: number) {
   const last = await prisma.presupuesto.findFirst({
+    where: { usuarioId },
     orderBy: { createdAt: 'desc' },
   });
   const num = last ? parseInt(last.numero.replace('PRE-', '')) + 1 : 1;
@@ -10,11 +12,16 @@ async function generateNumero() {
 }
 
 export async function GET(request: Request) {
+  const user = await getUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const estado = searchParams.get('estado');
   const clienteId = searchParams.get('clienteId');
   
-  const where: any = {};
+  const where: any = { usuarioId: user.id };
   if (estado) where.estado = estado;
   if (clienteId) where.clienteId = parseInt(clienteId);
 
@@ -32,8 +39,13 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const user = await getUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
   const data = await request.json();
-  const numero = await generateNumero();
+  const numero = await generateNumero(user.id);
   
   let total = 0;
   for (const item of data.detalles) {
@@ -44,6 +56,7 @@ export async function POST(request: Request) {
     data: {
       numero,
       clienteId: data.clienteId,
+      usuarioId: user.id,
       subtotal: total,
       iva: 0,
       total,

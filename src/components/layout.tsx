@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Users, Package, FileText, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Users, Package, FileText, Menu, X, UserCog, LogOut } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '@/components/auth/provider';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -16,6 +17,7 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   return (
     <>
@@ -60,6 +62,43 @@ export function Sidebar() {
               );
             })}
           </nav>
+          {user?.rol === 'ADMIN' && (
+            <div className="p-4 border-t">
+              <Link
+                href="/usuarios"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
+                  pathname === '/usuarios'
+                    ? 'bg-purple-50 text-purple-700 font-medium'
+                    : 'text-slate-600 hover:bg-slate-100'
+                )}
+              >
+                <UserCog className="h-5 w-5" />
+                Usuarios
+              </Link>
+            </div>
+          )}
+          <div className="p-4 border-t">
+            <div className="flex items-center gap-3 px-4 py-2">
+              <div className="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center">
+                <span className="text-sm font-medium text-cyan-700">
+                  {user?.nombre?.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{user?.nombre}</p>
+                <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+              </div>
+              <button
+                onClick={logout}
+                className="p-2 hover:bg-slate-100 rounded"
+                title="Cerrar sesión"
+              >
+                <LogOut className="h-4 w-4 text-slate-400" />
+              </button>
+            </div>
+          </div>
         </div>
       </aside>
 

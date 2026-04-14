@@ -1,13 +1,19 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getUserFromRequest } from '@/lib/auth';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const user = await getUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
   const { id } = await params;
-  const producto = await prisma.producto.findUnique({
-    where: { id: parseInt(id) },
+  const producto = await prisma.producto.findFirst({
+    where: { id: parseInt(id), usuarioId: user.id },
   });
   if (!producto) {
     return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 });
@@ -19,10 +25,15 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const user = await getUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
   const { id } = await params;
   const data = await request.json();
   const producto = await prisma.producto.update({
-    where: { id: parseInt(id) },
+    where: { id: parseInt(id), usuarioId: user.id },
     data: {
       nombre: data.nombre,
       descripcion: data.descripcion || null,
@@ -39,9 +50,14 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const user = await getUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
   const { id } = await params;
   await prisma.producto.delete({
-    where: { id: parseInt(id) },
+    where: { id: parseInt(id), usuarioId: user.id },
   });
   return NextResponse.json({ success: true });
 }

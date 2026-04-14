@@ -1,11 +1,5 @@
-INSERT INTO "Producto" (nombre, descripcion, tipo, presentacion, precio, activo) VALUES 
-('Agua purificada', 'Agua purificada de mesa', 'AGUA', '500ml', 500, true),
-('Agua purificada', 'Agua purificada de mesa', 'AGUA', '1L', 800, true),
-('Agua purificada', 'Agua purificada de mesa', 'AGUA', '5L', 2500, true),
-('Agua purificada', 'Agua purificada de mesa', 'AGUA', '20L', 6000, true),
-('Soda de sabores', 'Soda con gas natural', 'SODA', '500ml', 600, true),
-('Soda de sabores', 'Soda con gas natural', 'SODA', '1L', 1000, true),
-('Soda de sabores', 'Soda con gas natural', 'SODA', '2L', 1800, true);
+-- Seed para PostgreSQL con usuarios
+-- Password: admin123
 
-INSERT INTO "Cliente" (nombre, email, telefono, direccion) VALUES 
-('Empresa Demo', 'demo@ejemplo.com', '55 1234 5678', 'Ciudad de México');
+INSERT INTO "Usuario" (email, password, nombre, rol, activo, "createdAt", "updatedAt") VALUES 
+('admin@soderia.com', '$2b$10$bQ/6covQUszrzXrTTuPCLufJ4mC1IFixKNTJPmkbMYAQepQcSxpxq', 'Admin Principal', 'ADMIN', true, NOW(), NOW());

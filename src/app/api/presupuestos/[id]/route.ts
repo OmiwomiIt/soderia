@@ -1,13 +1,19 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getUserFromRequest } from '@/lib/auth';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const user = await getUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
   const { id } = await params;
-  const presupuesto = await prisma.presupuesto.findUnique({
-    where: { id: parseInt(id) },
+  const presupuesto = await prisma.presupuesto.findFirst({
+    where: { id: parseInt(id), usuarioId: user.id },
     include: {
       cliente: true,
       detalles: { include: { producto: true } },
@@ -23,12 +29,20 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const user = await getUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
   const { id } = await params;
   const data = await request.json();
   
-  const existing = await prisma.presupuesto.findUnique({
-    where: { id: parseInt(id) },
+  const existing = await prisma.presupuesto.findFirst({
+    where: { id: parseInt(id), usuarioId: user.id },
   });
+  if (!existing) {
+    return NextResponse.json({ error: 'Presupuesto no encontrado' }, { status: 404 });
+  }
   if (existing?.estado === 'ENVIADO' || existing?.estado === 'ACEPTADO') {
     if (data.detalles) {
       return NextResponse.json(
@@ -67,7 +81,7 @@ export async function PUT(
   }
 
   const presupuesto = await prisma.presupuesto.update({
-    where: { id: parseInt(id) },
+    where: { id: parseInt(id), usuarioId: user.id },
     data: updateData,
     include: {
       cliente: true,
@@ -81,9 +95,14 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const user = await getUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
   const { id } = await params;
   await prisma.presupuesto.delete({
-    where: { id: parseInt(id) },
+    where: { id: parseInt(id), usuarioId: user.id },
   });
   return NextResponse.json({ success: true });
 }
