@@ -27,7 +27,7 @@ function TopNav() {
   return (
     <header className="hidden lg:flex fixed top-0 left-0 right-0 h-14 bg-white border-b border-slate-200 z-50 items-center justify-between px-4">
       <div className="flex items-center gap-1">
-        <Link href="/" className="text-lg font-bold text-sky-600 mr-8">KioskoFlow</Link>
+        <Link href="/" className="text-lg font-bold text-sky-600 mr-8">Sodería</Link>
         {navigation.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href, pathname);
