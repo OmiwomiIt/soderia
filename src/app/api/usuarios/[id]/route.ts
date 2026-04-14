@@ -18,25 +18,6 @@ async function getUser(request: Request) {
   }
 }
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const user = await getUser(request);
-  if (!user || user.rol !== 'ADMIN') {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
-  }
-
-  const { id } = await params;
-  const usuario = await prisma.usuario.findUnique({
-    where: { id: parseInt(id) },
-    select: { id: true, email: true, nombre: true, rol: true, activo: true, createdAt: true },
-  });
-
-  if (!usuario) {
-    return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
-  }
-
-  return NextResponse.json(usuario);
-}
-
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await getUser(request);
   if (!user || user.rol !== 'ADMIN') {
@@ -46,11 +27,14 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const { id } = await params;
   const data = await request.json();
 
-  const updateData: any = {};
-  if (data.nombre) updateData.nombre = data.nombre;
-  if (data.rol) updateData.rol = data.rol;
-  if (data.activo !== undefined) updateData.activo = data.activo;
-  if (data.password) updateData.password = await bcrypt.hash(data.password, 10);
+  const updateData: any = {
+    nombre: data.nombre,
+    rol: data.rol,
+  };
+
+  if (data.password) {
+    updateData.password = await bcrypt.hash(data.password, 10);
+  }
 
   const usuario = await prisma.usuario.update({
     where: { id: parseInt(id) },
@@ -72,10 +56,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   }
 
   const { id } = await params;
+  await prisma.usuario.delete({ where: { id: parseInt(id) } });
 
-  await prisma.usuario.delete({
-    where: { id: parseInt(id) },
-  });
-
-  return NextResponse.json({ message: 'Usuario eliminado' });
+  return NextResponse.json({ success: true });
 }
