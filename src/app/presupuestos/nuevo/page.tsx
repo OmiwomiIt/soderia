@@ -40,6 +40,7 @@ export default function NuevoPresupuestoPage() {
   const [observaciones, setObservaciones] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
   const [showProducto, setShowProducto] = useState(false);
 
   useEffect(() => {
@@ -83,8 +84,12 @@ export default function NuevoPresupuestoPage() {
   const total = detalles.reduce((sum, d) => sum + d.total, 0);
 
   async function handleSave(estado: 'BORRADOR' | 'ENVIADO') {
-    if (!selectedCliente || detalles.length === 0) return;
+    if (!selectedCliente || detalles.length === 0) {
+      setError('Selecciona un cliente y agrega productos');
+      return;
+    }
     setSaving(true);
+    setError('');
 
     const data = {
       clienteId: selectedCliente,
@@ -97,19 +102,30 @@ export default function NuevoPresupuestoPage() {
       })),
     };
 
-    await fetch('/api/presupuestos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch('/api/presupuestos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
 
-    router.push('/presupuestos');
+      if (res.ok) {
+        router.push('/presupuestos');
+      } else {
+        const errData = await res.json();
+        setError(errData.error || 'Error al guardar');
+        setSaving(false);
+      }
+    } catch (err) {
+      setError('Error de conexión');
+      setSaving(false);
+    }
   }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
       </div>
     );
   }
@@ -125,6 +141,12 @@ export default function NuevoPresupuestoPage() {
           <p className="text-slate-500">Crea un nuevo presupuesto</p>
         </div>
       </div>
+
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
+          {error}
+        </div>
+      )}
 
       <Card>
         <CardHeader>
