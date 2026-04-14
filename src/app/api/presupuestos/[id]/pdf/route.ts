@@ -1,15 +1,21 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { generatePDF } from '@/lib/pdf';
+import { getUserFromRequest } from '@/lib/auth';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const user = await getUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
   const { id } = await params;
   
-  const presupuesto = await prisma.presupuesto.findUnique({
-    where: { id: parseInt(id) },
+  const presupuesto = await prisma.presupuesto.findFirst({
+    where: { id: parseInt(id), usuarioId: user.id },
     include: {
       cliente: true,
       detalles: { include: { producto: true } },
