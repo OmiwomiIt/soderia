@@ -8,15 +8,17 @@
 - **Target users**: Empresa de distribución de agua embotellada y soda
 - **Production URL**: https://soderia.vercel.app/
 - **GitHub**: https://github.com/OmiwomiIt/soderia
+- **Stack**: Next.js 16 + React 19 + TypeScript + Tailwind 4 + Prisma 7 + Neon PostgreSQL
 
 ## 2. Tech Stack
 
-- **Frontend**: Next.js 16 (App Router) + React + TypeScript
-- **Styling**: Tailwind CSS
+- **Frontend**: Next.js 16 (App Router) + React 19 + TypeScript
+- **Styling**: Tailwind CSS 4
 - **Backend**: API Routes de Next.js
-- **Base de datos**: Neon PostgreSQL con Prisma ORM
+- **Base de datos**: Neon PostgreSQL con Prisma ORM 7
 - **PDF**: jsPDF + jspdf-autotable
 - **UI Components**: shadcn/ui
+- **Auth**: JWT (jose) + bcrypt
 
 ## 3. Deployment
 
@@ -37,24 +39,29 @@ postgresql://neondb_owner:npg_QcaTsu1POCr9@ep-aged-cloud-anjztkxc.c-6.us-east-1.
 
 ### Layout Structure
 
-- **Header**: Logo + Navigation + Empresa nombre
-- **Sidebar** (desktop): Menú de navegación
+- **Mobile**: Bottom navigation con tabs
+- **Desktop**: Top navigation con menú horizontal  
 - **Main content**: Área de trabajo
 - **Responsive**: Mobile-first, breakpoints: sm (640px), md (768px), lg (1024px)
 
 ### Visual Design
 
-**Paleta de colores**:
-- Primary: `#0891b2` (cyan-600) - Color institucional agua
-- Primary dark: `#0e7490` (cyan-700)
+**Paleta de colores** (actualizada):
+- Primary: `#0ea5e9` (sky-500) - Color institucional agua
+- Primary dark: `#0284c7` (sky-600)
 - Secondary: `#f97316` (orange-500) - Soda
-- Secondary dark: `#ea580c` (orange-600)
 - Background: `#f8fafc` (slate-50)
 - Surface: `#ffffff`
-- Text primary: `#0f172a` (slate-900)
+- Text primary: `#1e293b` (slate-800)
 - Text secondary: `#64748b` (slate-500)
 - Success: `#22c55e` (green-500)
 - Error: `#ef4444` (red-500)
+
+**Diseño móvil-friendly**:
+- Botones grandes para touch (h-11, h-12)
+- Inputs con padding generoso (h-12)
+- Bottom tabs en móvil para fácil acceso con pulgar
+- Colores suaves para menor consumo batería
 
 **Tipografía**:
 - Font family: `Inter` (Google Fonts)
@@ -109,6 +116,28 @@ postgresql://neondb_owner:npg_QcaTsu1POCr9@ep-aged-cloud-anjztkxc.c-6.us-east-1.
 - Close button top-right
 
 ## 5. Data Models
+
+### Usuario
+```prisma
+model Usuario {
+  id           Int          @id @default(autoincrement())
+  email       String       @unique
+  password    String       // BCrypt hash
+  nombre      String
+  rol         RolUsuario    @default(USUARIO)
+  activo      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  productos   Producto[]
+  clientes    Cliente[]
+  presupuestos Presupuesto[]
+}
+
+enum RolUsuario {
+  ADMIN    // Puede gestionar usuarios
+  USUARIO // Solo ve sus propios datos
+}
+```
 
 ### Cliente
 ```prisma
@@ -186,7 +215,13 @@ model DetallePresupuesto {
 
 ## 6. Funcionalidades
 
-### 6.1 Dashboard
+### 6.1 Autenticación
+- Login con email y contraseña
+- JWT en cookies (httpOnly, secure en producción)
+- Roles: ADMIN y USUARIO
+- Middleware de protección de rutas
+
+### 6.2 Dashboard
 - Resumen de presupuestos del mes
 - Recent presupuestos rápido acceso
 - Stats: Total presupuestos, pendientes, enviados

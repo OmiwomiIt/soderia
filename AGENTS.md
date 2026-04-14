@@ -10,7 +10,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 - **App**: https://soderia.vercel.app/
 - **Repo**: https://github.com/OmiwomiIt/soderia
-- **Stack**: Next.js 16 + React + TypeScript + Tailwind + Prisma + Neon PostgreSQL
+- **Stack**: Next.js 16 + React 19 + TypeScript + Tailwind 4 + Prisma 7 + Neon PostgreSQL
 
 ## Tech Stack Versions
 
@@ -20,6 +20,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - Tailwind CSS 4.x
 - Prisma 7.x
 - shadcn/ui
+- jose + bcrypt (auth)
 
 ## Base de Datos
 
@@ -38,9 +39,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
   "build": "next build",
   "start": "next start",
   "lint": "next lint",
-  "postinstall": "prisma generate",
-  "db:push": "prisma db push",
-  "db:seed": "npx tsx prisma/seed.ts"
+  "postinstall": "prisma generate"
 }
 ```
 
@@ -54,8 +53,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **Solución**:
 1. Ensure `package.json` tiene `"postinstall": "prisma generate"`
-2. Ensure `vercel.json` tiene `"postInstallPatchPrisma": true`
-3. Regenerar: `npm run postinstall`
+2. Regenerar: `npm run postinstall`
 
 ### Error 500 en producción
 
@@ -63,31 +61,62 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **Solución**: Agregar en Vercel Settings → Environment Variables.
 
+### Unique constraint failed on numero
+
+**Error**: `Unique constraint failed on the fields: (\`numero\`)`
+
+**Causa**: Número de presupuesto duplicado.
+
+**Solución**: La función generateNumero en presupuestos/route.ts ahora verifica existence.
+
 ## Diseño UI
 
-- **Colores**: cyan-600 (#0891b2) para agua, orange-500 (#f97316) para soda
+- **Colores**: sky-500 (#0ea5e9) para agua, orange-500 (#f97316) para soda
 - **Font**: Inter
 - **Moneda**: Pesos Argentinos ($AR)
+- **Mobile-first**: Bottom nav en móvil, top tabs en PC
+- **Botones táctiles**: h-11, h-12 para mejor touch
 
 ## Estructura Pages
 
 ```
 /                     → Dashboard
+/login               → Login
 /clientes             → Lista clientes
-/clientes/nuevo       → Crear cliente
 /productos           → Lista productos
 /presupuestos        → Lista presupuestos
-/presupuestos/nuevo → Nuevo presupuesto
+/presupuestos/nuevo  → Nuevo presupuesto
+/presupuestos/[id]   → Ver presupuesto
+/usuarios           → Gestión usuarios (admin)
 ```
 
 ## Estructura API
 
 ```
-/api/clientes         → GET, POST
-/api/clientes/[id]    → GET, PUT, DELETE
-/api/productos        → GET, POST
-/api/productos/[id]   → GET, PUT, DELETE
-/api/presupuestos     → GET, POST
-/api/presupuestos/[id]→ GET, PUT, DELETE
+/api/auth           → POST (login), GET (verify)
+/api/auth/logout     → POST
+/api/clientes       → GET, POST
+/api/clientes/[id]  → GET, PUT, DELETE
+/api/productos      → GET, POST
+/api/productos/[id] → GET, PUT, DELETE
+/api/presupuestos   → GET, POST
+/api/presupuestos/[id] → GET, PUT, DELETE
 /api/presupuestos/[id]/pdf → GET
+/api/usuarios      → GET, POST (admin)
+/api/usuarios/[id]  → PUT, DELETE (admin)
+```
+
+## Autenticación
+
+- JWT en cookies (httpOnly)
+- Roles: ADMIN, USUARIO
+- Middleware protege rutas
+- getUserFromRequest en lib/auth.ts
+
+## Admin Setup
+
+Crear en Neon SQL Editor:
+```sql
+INSERT INTO "Usuario" (email, password, nombre, rol, activo, "createdAt", "updatedAt") 
+VALUES ('admin@soderia.com', '$2b$10$...', 'Admin', 'ADMIN', true, NOW(), NOW());
 ```

@@ -9,12 +9,13 @@
 
 ## Tech Stack
 
-- Next.js 16 (App Router) + React + TypeScript
-- Tailwind CSS
-- Prisma ORM
+- Next.js 16 (App Router) + React 19 + TypeScript
+- Tailwind CSS 4
+- Prisma ORM 7
 - Neon PostgreSQL
 - jsPDF + jspdf-autotable
 - shadcn/ui
+- bcrypt + jose (JWT)
 
 ## Estructura del Proyecto
 
@@ -22,22 +23,29 @@
 soderia/
 ├── src/
 │   ├── app/
-│   │   ├── layout.tsx
-│   │   ├── page.tsx              # Dashboard
-│   │   ├── clientes/             # Gestión clientes
-│   │   ├── productos/           # Gestión productos
-│   │   ├── presupuestos/       # Gestión presupuestos
-│   │   └── api/                # Endpoints API
-│   ├── lib/
-│   │   └── prisma.ts           # Cliente Prisma
-│   └── components/             # Componentes UI
+│   │   ├── layout.tsx           # Root layout con AuthProvider
+│   │   ├── page.tsx            # Dashboard
+│   │   ├── login/              # Página login
+│   │   ├── clientes/           # CRUD clientes
+│   │   ├── productos/          # CRUD productos
+│   │   ├── presupuestos/       # CRUD presupuestos
+│   │   ├── usuarios/           # Gestión usuarios (admin)
+│   │   └── api/               # Endpoints API
+│   ├── components/
+│   │   ├── ui/               # Componentes shadcn
+│   │   ├── auth/              # Provider autenticación
+│   │   ├── layout.tsx          # Layout principal
+│   │   └── modal.tsx          # Modal reutilizable
+│   └── lib/
+│       ├── prisma.ts           # Cliente Prisma
+│       ├── auth.ts            # Utilidad JWT
+│       └── pdf.ts             # Generación PDF
 ├── prisma/
 │   ├── schema.prisma          # Modelos de datos
-│   └── seed.ts               # Datos de ejemplo
-├── .env                      # Variables locales
-├── package.json              # Dependencias y scripts
-├── vercel.json              # Config Vercel
-└── tailwind.config.ts        # Config Tailwind
+│   └── seed.ts               # Seed datos
+├── .env                     # Variables entorno
+├── package.json             # Dependencias
+└── vercel.json             # Config Vercel
 ```
 
 ## Comandos Útiles
@@ -49,37 +57,35 @@ npm run dev
 # Build producción
 npm run build
 
-# Sincronizar DB
-npm run db:push
-
-# Poblar datos ejemplo
-npm run db:seed
-
 # Regenerar Prisma client
 npm run postinstall
 ```
 
-## Configuración Requerida
-
-### Variables de Entorno (.env local)
-```
-DATABASE_URL="postgresql://neondb_owner:npg_QcaTsu1POCr9@ep-aged-cloud-anjztkxc.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require"
-```
-
-### Vercel
-Agregar en Settings → Environment Variables:
-- `DATABASE_URL`: conexión PostgreSQL de Neon
-
 ## Modelos de Datos
 
-- **Cliente**: nombre, email, telefono, direccion
-- **Producto**: nombre, descripcion, tipo (AGUA/SODA), presentacion, precio, activo
-- **Presupuesto**: numero, cliente, subtotal, iva, total, observaciones, estado
-- **DetallePresupuesto**: presupuesto, producto, cantidad, precioUnitario, total
+- **Usuario**: id, email, password, nombre, rol (ADMIN/USUARIO), activo
+- **Cliente**: nombre, email, telefono, direccion, usuarioId
+- **Producto**: nombre, descripcion, tipo (AGUA/SODA), presentacion, precio, activo, usuarioId
+- **Presupuesto**: numero, clienteId, usuarioId, subtotal, iva, total, observaciones, estado
+- **DetallePresupuesto**: presupuestoId, productoId, cantidad, precioUnitario, total
+
+## Autenticación
+
+- JWT en cookies (httpOnly, secure en producción)
+- Roles: ADMIN (gestiona usuarios) y USUARIO (solo ve sus datos)
+- Middleware protege rutas `/api/*` y páginas
+
+## UI Móvil-First
+
+- Mobile: Bottom navigation
+- Desktop: Top tabs
+- Colores: sky-500 (primary), orange-500 (secondary)
+- Botones táctiles grandes
 
 ## Notas Importantes
 
-1. **Prisma Client**: El script `postinstall` regenera el cliente después de `npm install`
-2. **Vercel**: Requiere DATABASE_URL configurada para funcionar
-3. **Moneda**: Pesos Argentinos ($AR) - precios incluye IVA
-4. **Estados Presupuesto**: BORRADOR, ENVIADO, ACEPTADO, RECHAZADO
+1. **Prisma 7**: `postinstall` regenera el cliente
+2. **Vercel**: Requiere DATABASE_URL y JWT_SECRET
+3. **Moneda**: Pesos Argentinos ($AR)
+4. **Estados**: BORRADOR, ENVIADO, ACEPTADO, RECHAZADO
+5. **Admin**: Crear manualmente en Neon SQL Editor
