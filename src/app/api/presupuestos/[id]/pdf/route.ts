@@ -1,32 +1,12 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { generatePDF } from '@/lib/pdf';
 import { getUserFromRequest } from '@/lib/auth';
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const user = await getUserFromRequest(request);
-  if (!user) {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-  }
+export const dynamic = 'force-dynamic';
 
-  const { id } = await params;
-  
-  const presupuesto = await prisma.presupuesto.findFirst({
-    where: { id: parseInt(id), usuarioId: user.id },
-    include: {
-      cliente: true,
-      detalles: { include: { producto: true } },
-    },
-  });
-
-  if (!presupuesto) {
-    return NextResponse.json({ error: 'Presupuesto no encontrado' }, { status: 404 });
-  }
-
-  const doc = generatePDF({
+async function generatePDF(presupuesto: any) {
+  const { generatePDF } = await import('@/lib/pdf');
+  return generatePDF({
     numero: presupuesto.numero,
     createdAt: presupuesto.createdAt,
     cliente: {
@@ -50,13 +30,42 @@ export async function GET(
     observaciones: presupuesto.observaciones,
     estado: presupuesto.estado,
   });
+}
 
-  doc.save(`presupuesto-${presupuesto.numero}.pdf`);
-  
-  return new NextResponse(doc.output('blob'), {
-    headers: {
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="presupuesto-${presupuesto.numero}.pdf"`,
-    },
-  });
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const user = await getUserFromRequest(request);
+    if (!user) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    }
+
+    const { id } = await params;
+    
+    const presupuesto = await prisma.presupuesto.findFirst({
+      where: { id: parseInt(id), usuarioId: user.id },
+      include: {
+        cliente: true,
+        detalles: { include: { producto: true } },
+      },
+    });
+
+    if (!presupuesto) {
+      return NextResponse.json({ error: 'Presupuesto no encontrado' }, { status: 404 });
+    }
+
+    const doc = await generatePDF(presupuesto);
+    
+    return new NextResponse(doc.output('blob'), {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="presupuesto-${presupuesto.numero}.pdf"`,
+      },
+    });
+  } catch (error) {
+    console.error('PDF Error:', error);
+    return NextResponse.json({ error: 'Error al generar PDF' }, { status: 500 });
+  }
 }
