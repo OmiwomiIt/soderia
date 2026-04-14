@@ -70,6 +70,18 @@ export async function POST(request: Request) {
   }
 
   try {
+    console.log('Creating presupuesto:', { numero, clienteId: data.clienteId, usuarioId: user.id });
+    
+    // Verificar que el cliente pertenece al usuario
+    const cliente = await prisma.cliente.findFirst({
+      where: { id: data.clienteId, usuarioId: user.id }
+    });
+    console.log('Cliente:', cliente);
+    
+    if (!cliente) {
+      return NextResponse.json({ error: 'Cliente no encontrado o no pertenece al usuario' }, { status: 400 });
+    }
+
     const presupuesto = await prisma.presupuesto.create({
       data: {
         numero,
@@ -94,9 +106,10 @@ export async function POST(request: Request) {
         detalles: { include: { producto: true } },
       },
     });
+    console.log('Presupuesto creado:', presupuesto.id);
     return NextResponse.json(presupuesto, { status: 201 });
-  } catch (err) {
+  } catch (err: any) {
     console.error('DB error:', err);
-    return NextResponse.json({ error: 'Error al guardar en base de datos' }, { status: 500 });
+    return NextResponse.json({ error: 'Error al guardar: ' + err.message }, { status: 500 });
   }
 }
