@@ -3,12 +3,29 @@ import prisma from '@/lib/prisma';
 import { getUserFromRequest } from '@/lib/auth';
 
 async function generateNumero(usuarioId: number) {
+  // Buscar el último número del mismo usuario
   const last = await prisma.presupuesto.findFirst({
     where: { usuarioId },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { numero: 'desc' },
   });
-  const num = last ? parseInt(last.numero.replace('PRE-', '')) + 1 : 1;
-  return `PRE-${num.toString().padStart(5, '0')}`;
+  let num = 1;
+  if (last) {
+    const lastNum = parseInt(last.numero.replace('PRE-', ''));
+    if (!isNaN(lastNum)) {
+      num = lastNum + 1;
+    }
+  }
+  // Verificar que no existe y buscar uno libre si es necesario
+  let nuevoNumero = `PRE-${num.toString().padStart(5, '0')}`;
+  let existing = await prisma.presupuesto.findUnique({ where: { numero: nuevoNumero } });
+  let attempts = 0;
+  while (existing && attempts < 100) {
+    num++;
+    nuevoNumero = `PRE-${num.toString().padStart(5, '0')}`;
+    existing = await prisma.presupuesto.findUnique({ where: { numero: nuevoNumero } });
+    attempts++;
+  }
+  return nuevoNumero;
 }
 
 export async function GET(request: Request) {
