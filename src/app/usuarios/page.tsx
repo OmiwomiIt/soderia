@@ -27,7 +27,7 @@ export default function UsuariosPage() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editando, setEditando] = useState<Usuario | null>(null);
-  const [form, setForm] = useState({ nombre: '', email: '', password: '', rol: 'USUARIO' as const });
+  const [form, setForm] = useState<{ nombre: string; email: string; password: string; rol: 'ADMIN' | 'USUARIO' }>({ nombre: '', email: '', password: '', rol: 'USUARIO' });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
