@@ -7,16 +7,22 @@ import { Button } from './button';
 
 interface ModalProps {
   open: boolean;
-  onClose: () => void;
+  onOpenChange?: (open: boolean) => void;
+  onClose?: () => void;
   children: React.ReactNode;
   title: string;
   className?: string;
 }
 
-export function Modal({ open, onClose, children, title, className }: ModalProps) {
+export function Modal({ open, onOpenChange, onClose, children, title, className }: ModalProps) {
+  const handleClose = () => {
+    onClose?.();
+    onOpenChange?.(false);
+  };
+
   React.useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') handleClose();
     };
     if (open) {
       document.addEventListener('keydown', handleEscape);
@@ -32,7 +38,7 @@ export function Modal({ open, onClose, children, title, className }: ModalProps)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/50" onClick={handleClose} />
       <div
         className={cn(
           'relative z-50 w-full max-w-lg rounded-xl bg-white shadow-lg p-6 mx-4',
@@ -41,7 +47,7 @@ export function Modal({ open, onClose, children, title, className }: ModalProps)
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">{title}</h2>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button variant="ghost" size="icon" onClick={handleClose}>
             <X className="h-5 w-5" />
           </Button>
         </div>

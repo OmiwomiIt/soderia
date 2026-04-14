@@ -176,12 +176,8 @@ export default function UsuariosPage() {
         </CardContent>
       </Card>
 
-      <Modal open={showModal} onOpenChange={setShowModal}>
-        <div className="p-6">
-          <h2 className="text-xl font-bold mb-4">
-            {editando ? 'Editar Usuario' : 'Nuevo Usuario'}
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
+      <Modal open={showModal} onOpenChange={setShowModal} title={editando ? 'Editar Usuario' : 'Nuevo Usuario'}>
+        <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
                 {error}
@@ -236,7 +232,6 @@ export default function UsuariosPage() {
               </Button>
             </div>
           </form>
-        </div>
       </Modal>
     </div>
   );
