@@ -1,60 +1,74 @@
-15:35:19.471 Running build in Washington, D.C., USA (East) – iad1
-15:35:19.471 Build machine configuration: 2 cores, 8 GB
-15:35:19.481 Cloning github.com/OmiwomiIt/soderia (Branch: main, Commit: 63b9f95)
-15:35:19.482 Skipping build cache, deployment was triggered without cache.
-15:35:19.716 Cloning completed: 234.000ms
-15:35:21.952 Running "vercel build"
-15:35:22.573 Vercel CLI 50.43.0
-15:35:22.827 Installing dependencies...
-15:35:26.062 npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
-15:35:39.582 
-15:35:39.583 added 539 packages in 17s
-15:35:39.583 
-15:35:39.583 169 packages are looking for funding
-15:35:39.584   run `npm fund` for details
-15:35:39.650 Detected Next.js version: 16.2.3
-15:35:39.656 Running "npm run build"
-15:35:39.751 
-15:35:39.751 > soderia@0.1.0 build
-15:35:39.751 > next build
-15:35:39.752 
-15:35:40.240 Attention: Next.js now collects completely anonymous telemetry regarding usage.
-15:35:40.240 This information is used to shape Next.js' roadmap and prioritize features.
-15:35:40.241 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-15:35:40.241 https://nextjs.org/telemetry
-15:35:40.241 
-15:35:40.257 ▲ Next.js 16.2.3 (Turbopack)
-15:35:40.257 
-15:35:40.289   Creating an optimized production build ...
-15:35:47.210 ✓ Compiled successfully in 6.6s
-15:35:47.212   Running TypeScript ...
-15:35:51.093   Finished TypeScript in 3.9s ...
-15:35:51.096   Collecting page data using 1 worker ...
-15:35:51.422 Error: Failed to load external module @prisma/client-2c3a283f134fdcb6: Error: Cannot find module '.prisma/client/default'
-15:35:51.423 Require stack:
-15:35:51.423 - /vercel/path0/node_modules/@prisma/client/default.js
-15:35:51.423 - /vercel/path0/.next/server/chunks/[root-of-the-server]__07kzv~p._.js
-15:35:51.423 - /vercel/path0/.next/server/chunks/[turbopack]_runtime.js
-15:35:51.423 - /vercel/path0/.next/server/app/api/clientes/[id]/route.js
-15:35:51.424 - /vercel/path0/node_modules/next/dist/server/require.js
-15:35:51.424 - /vercel/path0/node_modules/next/dist/server/load-components.js
-15:35:51.424 - /vercel/path0/node_modules/next/dist/build/utils.js
-15:35:51.424 - /vercel/path0/node_modules/next/dist/build/worker.js
-15:35:51.424 - /vercel/path0/node_modules/next/dist/compiled/jest-worker/processChild.js
-15:35:51.424     at Context.externalRequire [as x] (.next/server/chunks/[turbopack]_runtime.js:624:15)
-15:35:51.425     at module evaluation (.next/server/chunks/[root-of-the-server]__07kzv~p._.js:2:4963)
-15:35:51.425     at instantiateModule (.next/server/chunks/[turbopack]_runtime.js:853:9)
-15:35:51.425     at getOrInstantiateModuleFromParent (.next/server/chunks/[turbopack]_runtime.js:877:12)
-15:35:51.425     at Context.commonJsRequire [as r] (.next/server/chunks/[turbopack]_runtime.js:302:12)
-15:35:51.425     at module evaluation (.next/server/chunks/[root-of-the-server]__07kzv~p._.js:19:12522)
-15:35:51.425     at instantiateModule (.next/server/chunks/[turbopack]_runtime.js:853:9)
-15:35:51.425     at getOrInstantiateModuleFromParent (.next/server/chunks/[turbopack]_runtime.js:877:12)
-15:35:51.425     at Context.esmImport [as i] (.next/server/chunks/[turbopack]_runtime.js:281:20)
-15:35:51.426     at module evaluation (.next/server/chunks/[root-of-the-server]__0if_fk~._.js:1:1267)
-15:35:51.926 
-15:35:51.926 > Build error occurred
-15:35:51.928 Error: Failed to collect page data for /api/clientes/[id]
-15:35:51.928     at ignore-listed frames {
-15:35:51.928   type: 'Error'
-15:35:51.928 }
-15:35:51.961 Error: Command "npm run build" exited with 1
+10:03:09.580 Running build in Washington, D.C., USA (East) – iad1
+10:03:09.580 Build machine configuration: 2 cores, 8 GB
+10:03:09.691 Cloning github.com/OmiwomiIt/soderia (Branch: main, Commit: f2f742e)
+10:03:09.933 Cloning completed: 241.000ms
+10:03:11.129 Restored build cache from previous deployment (Btmg6iNMFBuaUVrPYQm3H942f1rm)
+10:03:11.310 Running "vercel build"
+10:03:11.908 Vercel CLI 50.43.0
+10:03:12.150 Running "install" command: `npm install`...
+10:03:15.160 npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+10:03:15.243 npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+10:03:15.256 npm warn deprecated npmlog@5.0.1: This package is no longer supported.
+10:03:15.263 npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+10:03:15.284 npm warn deprecated are-we-there-yet@2.0.0: This package is no longer supported.
+10:03:15.294 npm warn deprecated gauge@3.0.2: This package is no longer supported.
+10:03:15.331 npm warn deprecated tar@6.2.1: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+10:03:19.702 
+10:03:19.703 > soderia@0.1.0 postinstall
+10:03:19.703 > prisma generate
+10:03:19.703 
+10:03:20.657 Loaded Prisma config from prisma.config.ts.
+10:03:20.657 
+10:03:20.716 Prisma schema loaded from prisma/schema.prisma.
+10:03:21.054 
+10:03:21.055 ✔ Generated Prisma Client (v7.7.0) to ./node_modules/@prisma/client in 165ms
+10:03:21.056 
+10:03:21.056 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+10:03:21.057 
+10:03:21.057 
+10:03:21.078 
+10:03:21.079 added 47 packages, and audited 587 packages in 9s
+10:03:21.079 
+10:03:21.080 173 packages are looking for funding
+10:03:21.080   run `npm fund` for details
+10:03:21.150 
+10:03:21.151 5 vulnerabilities (3 moderate, 2 high)
+10:03:21.151 
+10:03:21.152 To address issues that do not require attention, run:
+10:03:21.152   npm audit fix
+10:03:21.153 
+10:03:21.153 To address all issues (including breaking changes), run:
+10:03:21.153   npm audit fix --force
+10:03:21.153 
+10:03:21.153 Run `npm audit` for details.
+10:03:21.190 Detected Next.js version: 16.2.3
+10:03:21.190 Running "npx prisma generate && next build"
+10:03:22.177 Loaded Prisma config from prisma.config.ts.
+10:03:22.177 
+10:03:22.203 Prisma schema loaded from prisma/schema.prisma.
+10:03:22.473 
+10:03:22.474 ✔ Generated Prisma Client (v7.7.0) to ./node_modules/@prisma/client in 178ms
+10:03:22.474 
+10:03:22.475 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+10:03:22.475 
+10:03:22.475 
+10:03:23.211 ▲ Next.js 16.2.3 (Turbopack)
+10:03:23.212 
+10:03:23.219 ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+10:03:23.245   Creating an optimized production build ...
+10:03:32.300 ✓ Compiled successfully in 8.7s
+10:03:32.305   Running TypeScript ...
+10:03:36.920 Failed to type check.
+10:03:36.921 
+10:03:36.921 ./src/app/api/auth/route.ts:61:46
+10:03:36.922 Type error: Property 'get' does not exist on type 'Promise<ReadonlyRequestCookies>'.
+10:03:36.922 
+10:03:36.922   [90m59 |[0m [36mexport[0m [36masync[0m [36mfunction[0m [33mGET[0m() {
+10:03:36.922   [90m60 |[0m   [36mconst[0m token = [36mawait[0m jwtVerify(
+10:03:36.922 [31m[1m>[0m [90m61 |[0m     ([36mawait[0m [36mimport[0m([32m'next/headers'[0m)).cookies().get([32m'auth-token'[0m)?.value || [32m''[0m,
+10:03:36.922   [90m   |[0m                                              [31m[1m^[0m
+10:03:36.922   [90m62 |[0m     secret
+10:03:36.922   [90m63 |[0m   ).[36mcatch[0m(() => [36mnull[0m);
+10:03:36.922   [90m64 |[0m
+10:03:36.951 Next.js build worker exited with code: 1 and signal: null
+10:03:36.981 Error: Command "npx prisma generate && next build" exited with 1

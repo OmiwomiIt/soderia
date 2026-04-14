@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { SignJWT, jwtVerify } from 'jose';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcrypt';
@@ -57,17 +58,20 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  const token = await jwtVerify(
-    (await import('next/headers')).cookies().get('auth-token')?.value || '',
-    secret
-  ).catch(() => null);
+  const cookiesData = await cookies();
+  const token = cookiesData.get('auth-token')?.value || '';
 
   if (!token) {
     return NextResponse.json({ authenticated: false });
   }
 
-  return NextResponse.json({
-    authenticated: true,
-    user: token.payload,
-  });
+  try {
+    const payload = await jwtVerify(token, secret);
+    return NextResponse.json({
+      authenticated: true,
+      user: payload.payload,
+    });
+  } catch {
+    return NextResponse.json({ authenticated: false });
+  }
 }
