@@ -27,16 +27,36 @@ export default function PresupuestosPage() {
   }, [filter]);
 
   async function fetchData() {
-    const url = filter === 'ALL' ? '/api/presupuestos' : `/api/presupuestos?estado=${filter}`;
-    const res = await fetch(url);
-    setPresupuestos(await res.json());
+    try {
+      const url = filter === 'ALL' ? '/api/presupuestos' : `/api/presupuestos?estado=${filter}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        setPresupuestos(data);
+      } else {
+        console.error('Error fetching presupuestos');
+        setPresupuestos([]);
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      setPresupuestos([]);
+    }
     setLoading(false);
   }
 
   async function handleDelete(id: number) {
     if (!confirm('¿Eliminar presupuesto?')) return;
-    await fetch(`/api/presupuestos/${id}`, { method: 'DELETE' });
-    fetchData();
+    try {
+      const res = await fetch(`/api/presupuestos/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        fetchData();
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Error al eliminar');
+      }
+    } catch (err) {
+      alert('Error de conexión');
+    }
   }
 
   async function handleDownload(presupuesto: Presupuesto) {
@@ -53,7 +73,7 @@ export default function PresupuestosPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
       </div>
     );
   }
