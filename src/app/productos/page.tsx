@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import { Modal } from '@/components/ui/modal';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Edit, Trash2, Droplets, Wine, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, Droplets, Wine, Package, Search } from 'lucide-react';
 
 interface Producto {
   id: number;
@@ -170,7 +170,7 @@ export default function ProductosPage() {
               {filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-12">
-                    <Pack className="h-12 w-12 text-slate-200 mx-auto mb-3" />
+                    <Package className="h-12 w-12 text-slate-200 mx-auto mb-3" />
                     <p className="text-slate-400 font-medium">No hay productos</p>
                     <Button 
                       variant="link" 
