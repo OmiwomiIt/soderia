@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import { Modal } from '@/components/ui/modal';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Edit, Trash2, Droplets, Wine, Packets, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, Droplets, Wine, Search } from 'lucide-react';
 
 interface Producto {
   id: number;
@@ -101,7 +101,7 @@ export default function ProductosPage() {
   }
 
   const filtros = [
-    { value: 'ALL', label: 'Todos', icon: Packets },
+    { value: 'ALL', label: 'Todos', icon: Search },
     { value: 'AGUA', label: 'Agua', icon: Droplets },
     { value: 'SODA', label: 'Soda', icon: Wine },
   ] as const;
@@ -331,13 +331,5 @@ export default function ProductosPage() {
         </div>
       </Modal>
     </div>
-  );
-}
-
-function Pack({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M16.5 8.25V6.75a4.5 4.5 0 10-9 0v1.5m9 0a4.5 4.5 0 11-9 0m9 0v6.75a4.5 4.5 0 11-9 0V8.25m0 0h9.75a2.25 2.25 0 012.25 2.25v10.5a2.25 2.25 0 01-2.25 2.25h-9.75" />
-    </svg>
   );
 }
