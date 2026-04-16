@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Modal } from '@/components/ui/modal';
 import { useAuth } from '@/components/auth/provider';
-import { Plus, Pencil, Trash2, ArrowLeft, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, ArrowLeft, UserCog, Shield, User } from 'lucide-react';
 
 interface Usuario {
   id: number;
@@ -96,74 +96,111 @@ export default function UsuariosPage() {
   if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-cyan-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
         <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-slate-100 rounded-lg">
+          <Link href="/" className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Usuarios</h1>
-            <p className="text-slate-500">Gestión de usuarios del sistema</p>
+            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Usuarios</h1>
+            <p className="text-slate-500 mt-1">Gestión de usuarios del sistema</p>
           </div>
         </div>
-        <Button onClick={openNew} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" /> Nuevo Usuario
+        <Button onClick={openNew} className="btn-primary">
+          <Plus className="h-4 w-4 mr-2" /> Nuevo Usuario
         </Button>
       </div>
 
-      <Card>
+      <Card className="animate-slide-up">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Rol</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+              <TableRow className="bg-slate-50">
+                <TableHead className="font-semibold">Usuario</TableHead>
+                <TableHead className="font-semibold">Email</TableHead>
+                <TableHead className="font-semibold">Rol</TableHead>
+                <TableHead className="font-semibold">Estado</TableHead>
+                <TableHead className="text-right font-semibold">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {usuarios.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-slate-400 py-8">
-                    No hay usuarios
+                  <TableCell colSpan={5} className="text-center py-12">
+                    <UserCog className="h-12 w-12 text-slate-200 mx-auto mb-3" />
+                    <p className="text-slate-400 font-medium">No hay usuarios</p>
+                    <Button variant="link" onClick={openNew} className="text-sky-600 mt-2">
+                      Crear el primero
+                    </Button>
                   </TableCell>
                 </TableRow>
               ) : (
-                usuarios.map((u) => (
-                  <TableRow key={u.id}>
-                    <TableCell className="font-medium">{u.nombre}</TableCell>
-                    <TableCell>{u.email}</TableCell>
+                usuarios.map((u, idx) => (
+                  <TableRow 
+                    key={u.id} 
+                    className="hover:bg-slate-50 transition-colors"
+                    style={{ animationDelay: `${idx * 20}ms` }}
+                  >
                     <TableCell>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        u.rol === 'ADMIN' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-700'
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                          u.rol === 'ADMIN' ? 'bg-purple-100' : 'bg-slate-100'
+                        }`}>
+                          {u.rol === 'ADMIN' ? (
+                            <Shield className="h-5 w-5 text-purple-600" />
+                          ) : (
+                            <User className="h-5 w-5 text-slate-600" />
+                          )}
+                        </div>
+                        <span className="font-semibold text-slate-700">{u.nombre}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-slate-600">{u.email}</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${
+                        u.rol === 'ADMIN' 
+                          ? 'bg-purple-100 text-purple-700' 
+                          : 'bg-slate-100 text-slate-700'
                       }`}>
                         {u.rol === 'ADMIN' ? 'Administrador' : 'Usuario'}
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded text-xs ${
-                        u.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${
+                        u.activo 
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-red-100 text-red-700'
                       }`}>
                         {u.activo ? 'Activo' : 'Inactivo'}
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <button onClick={() => handleEdit(u)} className="p-2 hover:bg-slate-100 rounded">
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <button onClick={() => handleDelete(u.id)} className="p-2 hover:bg-red-50 rounded text-red-500">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                      <div className="flex justify-end gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => handleEdit(u)}
+                          className="hover:bg-slate-100"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => handleDelete(u.id)}
+                          className="hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -174,62 +211,73 @@ export default function UsuariosPage() {
         </CardContent>
       </Card>
 
-      <Modal open={showModal} onOpenChange={setShowModal} title={editando ? 'Editar Usuario' : 'Nuevo Usuario'}>
-        <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
-                {error}
-              </div>
-            )}
-            <div>
-              <label className="block text-sm font-medium mb-1">Nombre</label>
-              <Input
-                value={form.nombre}
-                onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                required
-              />
+      <Modal open={showModal} onClose={() => setShowModal(false)} title={editando ? 'Editar Usuario' : 'Nuevo Usuario'}>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {error && (
+            <div className="p-3 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-xl text-red-600 text-sm font-medium animate-scale-in">
+              {error}
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
-              <Input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                required
-                disabled={!!editando}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Contraseña {editando && '(dejar vacío para mantener)'}
-              </label>
-              <Input
-                type="password"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                required={!editando}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Rol</label>
-              <select
-                value={form.rol}
-                onChange={(e) => setForm({ ...form, rol: e.target.value as 'ADMIN' | 'USUARIO' })}
-                className="w-full h-10 rounded-lg border border-slate-300 px-3"
-              >
-                <option value="USUARIO">Usuario</option>
-                <option value="ADMIN">Administrador</option>
-              </select>
-            </div>
-            <div className="flex gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => setShowModal(false)} className="flex-1">
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={saving} className="flex-1">
-                {saving ? 'Guardando...' : 'Guardar'}
-              </Button>
-            </div>
-          </form>
+          )}
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Nombre</label>
+            <Input
+              value={form.nombre}
+              onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+              placeholder="Nombre del usuario"
+              className="mt-1.5 bg-white"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Email</label>
+            <Input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              placeholder="email@ejemplo.com"
+              className="mt-1.5 bg-white"
+              required
+              disabled={!!editando}
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-700">
+              Contraseña {editando && <span className="text-slate-400">(dejar vacío para mantener)</span>}
+            </label>
+            <Input
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              placeholder="••••••••"
+              className="mt-1.5 bg-white"
+              required={!editando}
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Rol</label>
+            <select
+              value={form.rol}
+              onChange={(e) => setForm({ ...form, rol: e.target.value as 'ADMIN' | 'USUARIO' })}
+              className="w-full h-12 rounded-xl border border-slate-200 px-3 mt-1.5 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+            >
+              <option value="USUARIO">Usuario</option>
+              <option value="ADMIN">Administrador</option>
+            </select>
+          </div>
+          
+          <div className="flex gap-3 pt-2">
+            <Button type="button" variant="outline" onClick={() => setShowModal(false)} className="flex-1">
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={saving} className="flex-1 btn-primary">
+              {saving ? 'Guardando...' : 'Guardar'}
+            </Button>
+          </div>
+        </form>
       </Modal>
     </div>
   );

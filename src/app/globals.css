@@ -3,7 +3,10 @@
 @theme {
   --color-primary: #0ea5e9;
   --color-primary-dark: #0284c7;
+  --color-primary-light: #e0f2fe;
   --color-secondary: #f97316;
+  --color-secondary-dark: #ea580c;
+  --color-secondary-light: #ffedd5;
 }
 
 :root {
@@ -11,11 +14,27 @@
   --foreground: #1e293b;
   --primary: #0ea5e9;
   --primary-light: #e0f2fe;
+  --primary-dark: #0284c7;
   --secondary: #f97316;
+  --secondary-light: #ffedd5;
   --surface: #ffffff;
   --border: #e2e8f0;
   --text: #334155;
   --text-light: #64748b;
+  --text-muted: #94a3b8;
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-glow: 0 0 20px -5px rgb(14 165 233 / 0.3);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -34,6 +53,90 @@ body {
   padding-top: env(safe-area-inset-top, 0);
 }
 
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.gradient-primary {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+}
+
+.gradient-surface {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.card-hover {
+  transition: all 0.2s ease-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  font-weight: 500;
+  transition: all 0.15s ease-out;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.input-glow:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgb(14 165 233 / 0.15), var(--shadow-glow);
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @layer utilities {
   .touch-manipulation {
     touch-action: manipulation;
@@ -46,5 +149,9 @@ body {
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 }

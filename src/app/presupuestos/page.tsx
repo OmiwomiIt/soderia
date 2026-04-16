@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, FileText, Eye, Trash2, Download } from 'lucide-react';
+import { Plus, FileText, Eye, Trash2, Download, Search, ClipboardList, Send, Check, X } from 'lucide-react';
 
 interface Presupuesto {
   id: number;
@@ -17,9 +18,45 @@ interface Presupuesto {
   cliente: { nombre: string };
 }
 
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: 2,
+  }).format(value);
+};
+
+const estadoConfig: Record<string, { bg: string; text: string; icon: any; label: string }> = {
+  BORRADOR: { 
+    bg: 'bg-slate-100', 
+    text: 'text-slate-700',
+    icon: ClipboardList,
+    label: 'Borrador'
+  },
+  ENVIADO: { 
+    bg: 'bg-sky-100', 
+    text: 'text-sky-700',
+    icon: Send,
+    label: 'Enviado'
+  },
+  ACEPTADO: { 
+    bg: 'bg-green-100', 
+    text: 'text-green-700',
+    icon: Check,
+    label: 'Aceptado'
+  },
+  RECHAZADO: { 
+    bg: 'bg-red-100', 
+    text: 'text-red-700',
+    icon: X,
+    label: 'Rechazado'
+  },
+};
+
 export default function PresupuestosPage() {
   const [presupuestos, setPresupuestos] = useState<Presupuesto[]>([]);
   const [filter, setFilter] = useState<string>('ALL');
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,7 +71,6 @@ export default function PresupuestosPage() {
         const data = await res.json();
         setPresupuestos(data);
       } else {
-        console.error('Error fetching presupuestos');
         setPresupuestos([]);
       }
     } catch (err) {
@@ -43,6 +79,13 @@ export default function PresupuestosPage() {
     }
     setLoading(false);
   }
+
+  const filtered = search
+    ? presupuestos.filter(p => 
+        p.numero.toLowerCase().includes(search.toLowerCase()) ||
+        p.cliente.nombre.toLowerCase().includes(search.toLowerCase())
+      )
+    : presupuestos;
 
   async function handleDelete(id: number) {
     if (!confirm('¿Eliminar presupuesto?')) return;
@@ -63,12 +106,13 @@ export default function PresupuestosPage() {
     window.open(`/api/presupuestos/${presupuesto.id}/pdf`, '_blank');
   }
 
-  const estadoColors: Record<string, string> = {
-    BORRADOR: 'bg-slate-100 text-slate-700',
-    ENVIADO: 'bg-blue-100 text-blue-700',
-    ACEPTADO: 'bg-green-100 text-green-700',
-    RECHAZADO: 'bg-red-100 text-red-700',
-  };
+  const filtros = [
+    { value: 'ALL', label: 'Todos' },
+    { value: 'BORRADOR', label: 'Borrador' },
+    { value: 'ENVIADO', label: 'Enviados' },
+    { value: 'ACEPTADO', label: 'Aceptados' },
+    { value: 'RECHAZADO', label: 'Rechazados' },
+  ];
 
   if (loading) {
     return (
@@ -80,84 +124,141 @@ export default function PresupuestosPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Presupuestos</h1>
-          <p className="text-slate-500">Gestión de presupuestos</p>
+          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Presupuestos</h1>
+          <p className="text-slate-500 mt-1">Gestión de presupuestos</p>
         </div>
         <Link href="/presupuestos/nuevo">
-          <Button>
+          <Button className="btn-primary">
             <Plus className="h-4 w-4 mr-2" /> Nuevo Presupuesto
           </Button>
         </Link>
       </div>
 
-      <div className="flex gap-2">
-        <Button variant={filter === 'ALL' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('ALL')}>
-          Todos
-        </Button>
-        <Button variant={filter === 'BORRADOR' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('BORRADOR')}>
-          Borrador
-        </Button>
-        <Button variant={filter === 'ENVIADO' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('ENVIADO')}>
-          Enviados
-        </Button>
-        <Button variant={filter === 'ACEPTADO' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('ACEPTADO')}>
-          Aceptados
-        </Button>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Input
+            placeholder="Buscar presupuestos..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-10 bg-white"
+          />
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          {filtros.map((f) => (
+            <Button
+              key={f.value}
+              variant={filter === f.value ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilter(f.value)}
+            >
+              {f.label}
+            </Button>
+          ))}
+        </div>
       </div>
 
-      <Card>
+      <Card className="animate-slide-up">
         <CardContent className="pt-6">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Número</TableHead>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Fecha</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+              <TableRow className="bg-slate-50">
+                <TableHead className="font-semibold">Número</TableHead>
+                <TableHead className="font-semibold">Cliente</TableHead>
+                <TableHead className="font-semibold">Estado</TableHead>
+                <TableHead className="font-semibold">Total</TableHead>
+                <TableHead className="font-semibold">Fecha</TableHead>
+                <TableHead className="text-right font-semibold">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {presupuestos.length === 0 ? (
+              {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-slate-400">
-                    No hay presupuestos
+                  <TableCell colSpan={6} className="text-center py-12">
+                    <FileText className="h-12 w-12 text-slate-200 mx-auto mb-3" />
+                    <p className="text-slate-400 font-medium">No hay presupuestos</p>
+                    <Link href="/presupuestos/nuevo">
+                      <Button variant="link" className="text-sky-600 mt-2">
+                        Crear el primero
+                      </Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ) : (
-                presupuestos.map(p => (
-                  <TableRow key={p.id}>
-                    <TableCell className="font-medium">{p.numero}</TableCell>
-                    <TableCell>{p.cliente.nombre}</TableCell>
-                    <TableCell>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${estadoColors[p.estado]}`}>
-                        {p.estado}
-                      </span>
-                    </TableCell>
-                    <TableCell>$AR {p.total.toFixed(2)}</TableCell>
-                    <TableCell>{new Date(p.createdAt).toLocaleDateString('es-MX')}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Link href={`/presupuestos/${p.id}`}>
-                          <Button variant="ghost" size="icon">
-                            <Eye className="h-4 w-4" />
+                filtered.map((p, idx) => {
+                  const config = estadoConfig[p.estado];
+                  const Icon = config.icon;
+                  return (
+                    <TableRow 
+                      key={p.id} 
+                      className="hover:bg-slate-50 transition-colors"
+                      style={{ animationDelay: `${idx * 20}ms` }}
+                    >
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.bg}`}>
+                            <FileText className={`h-5 w-5 ${config.text}`} />
+                          </div>
+                          <span className="font-semibold text-slate-700">{p.numero}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-slate-600">{p.cliente.nombre}</span>
+                      </TableCell>
+                      <TableCell>
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${config.bg} ${config.text}`}>
+                          <Icon className="h-3.5 w-3.5" />
+                          {config.label}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-bold text-slate-800">{formatCurrency(p.total)}</span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-slate-500">
+                          {new Date(p.createdAt).toLocaleDateString('es-AR', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Link href={`/presupuestos/${p.id}`}>
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              className="hover:bg-sky-50"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => handleDownload(p)}
+                            className="hover:bg-slate-100"
+                          >
+                            <Download className="h-4 w-4" />
                           </Button>
-                        </Link>
-                        <Button variant="ghost" size="icon" onClick={() => handleDownload(p)}>
-                          <Download className="h-4 w-4" />
-                        </Button>
-                        {(p.estado === 'BORRADOR' || p.estado === 'RECHAZADO') && (
-                          <Button variant="ghost" size="icon" onClick={() => handleDelete(p.id)}>
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
+                          {(p.estado === 'BORRADOR' || p.estado === 'RECHAZADO') && (
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              onClick={() => handleDelete(p.id)}
+                              className="hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>

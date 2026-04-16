@@ -4,15 +4,15 @@
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
-# AGENTS.md - KioskoFlow
+# AGENTS.md - Sodería
 
 ## Proyecto Info
 
-- **App**: https://kioskoflow.vercel.app/
-- **Repo**: https://github.com/OmiwomiIt/kioskoflow
+- **App**: https://soderia.vercel.app/
+- **Repo**: https://github.com/OmiwomiIt/soderia
 - **Stack**: Next.js 16 + React 19 + TypeScript + Tailwind 4 + Prisma 7 + Neon PostgreSQL
 
-## Tech Stack Versions
+## Tech Stack Versiones
 
 - Next.js 16.x (App Router)
 - React 19.x
@@ -25,7 +25,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## Base de Datos
 
 - **Proveedor**: Neon PostgreSQL
-- **Connection String**: 
+- **Connection String**:
   ```
   postgresql://neondb_owner:npg_QcaTsu1POCr9@ep-aged-cloud-anjztkxc.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require
   ```
@@ -67,7 +67,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **Causa**: Número de presupuesto duplicado.
 
-**Solución**: La función generateNumero en presupuestos/route.ts ahora verifica existence.
+**Solución**: La función generateNumero en presupuestos/route.ts ahora verifica existencia.
 
 ## Diseño UI
 
@@ -113,10 +113,12 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - Middleware protege rutas
 - getUserFromRequest en lib/auth.ts
 
-## Admin Setup
+## Credenciales Admin
 
-Crear en Neon SQL Editor:
-```sql
-INSERT INTO "Usuario" (email, password, nombre, rol, activo, "createdAt", "updatedAt") 
-VALUES ('admin@kioskoflow.com', '$2b$10$...', 'Admin', 'ADMIN', true, NOW(), NOW());
-```
+- Email: admin@soderia.com
+- Password: admin123
+- Deben crearse en Neon SQL Editor
+
+## Design System
+
+Ver `.stitch/DESIGN.md` para los tokens de diseño oficiales.

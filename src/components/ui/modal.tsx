@@ -37,17 +37,25 @@ export function Modal({ open, onOpenChange, onClose, children, title, className 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/50" onClick={handleClose} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div 
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm animate-fade-in" 
+        onClick={handleClose} 
+      />
       <div
         className={cn(
-          'relative z-50 w-full max-w-lg rounded-xl bg-white shadow-lg p-6 mx-4',
+          'relative z-50 w-full max-w-lg bg-white rounded-2xl shadow-xl border border-slate-200/50 p-6 animate-scale-in',
           className
         )}
       >
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">{title}</h2>
-          <Button variant="ghost" size="icon" onClick={handleClose}>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-slate-800">{title}</h2>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleClose}
+            className="hover:bg-slate-100"
+          >
             <X className="h-5 w-5" />
           </Button>
         </div>

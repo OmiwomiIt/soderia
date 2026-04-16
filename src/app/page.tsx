@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Package, FileText, ArrowRight } from 'lucide-react';
+import { Users, Package, FileText, ArrowRight, TrendingUp, Clock, Send, Plus } from 'lucide-react';
 
 interface Stats {
   clientes: number;
@@ -18,8 +18,17 @@ interface Recent {
   numero: string;
   cliente: { nombre: string };
   total: number;
+  estado: string;
   createdAt: string;
 }
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: 2,
+  }).format(value);
+};
 
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats>({
@@ -65,89 +74,131 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
       </div>
     );
   }
 
+  const statCards = [
+    {
+      title: 'Clientes',
+      value: stats.clientes,
+      icon: Users,
+      color: 'text-sky-500',
+      bgColor: 'bg-sky-50',
+    },
+    {
+      title: 'Productos',
+      value: stats.productos,
+      icon: Package,
+      color: 'text-orange-500',
+      bgColor: 'bg-orange-50',
+    },
+    {
+      title: 'Presupuestos',
+      value: stats.presupuestos,
+      subtitle: `${stats.presupuestosMes} este mes`,
+      icon: FileText,
+      color: 'text-slate-600',
+      bgColor: 'bg-slate-50',
+    },
+    {
+      title: 'Pendientes',
+      value: stats.pendientes,
+      subtitle: `${stats.enviados} enviados`,
+      icon: Clock,
+      color: 'text-amber-500',
+      bgColor: 'bg-amber-50',
+    },
+  ];
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
-        <p className="text-slate-500">Resumen de tu negocio</p>
+      <div className="animate-fade-in">
+        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Dashboard</h1>
+        <p className="text-slate-500 mt-1">Resumen de tu negocio</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">Clientes</CardTitle>
-            <Users className="h-4 w-4 text-slate-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.clientes}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">Productos</CardTitle>
-            <Package className="h-4 w-4 text-slate-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.productos}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">Presupuestos</CardTitle>
-            <FileText className="h-4 w-4 text-slate-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.presupuestos}</div>
-            <p className="text-xs text-slate-400">{stats.presupuestosMes} este mes</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">Pendientes</CardTitle>
-            <FileText className="h-4 w-4 text-orange-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.pendientes}</div>
-            <p className="text-xs text-slate-400">{stats.enviados} enviados</p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {statCards.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <Card 
+              key={stat.title} 
+              className="card-hover animate-slide-up"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-slate-500">{stat.title}</CardTitle>
+                <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                  <Icon className={`h-4 w-4 ${stat.color}`} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-slate-800">{stat.value}</div>
+                {stat.subtitle && (
+                  <p className="text-xs text-slate-400 mt-1">{stat.subtitle}</p>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card className="animate-slide-up" style={{ animationDelay: '200ms' }}>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Presupuestos Recientes</CardTitle>
-            <Link href="/presupuestos" className="text-sm text-cyan-600 hover:underline flex items-center gap-1">
+            <CardTitle className="text-lg font-semibold">Presupuestos Recientes</CardTitle>
+            <Link href="/presupuestos" className="text-sm text-sky-600 hover:text-sky-700 hover:underline flex items-center gap-1 font-medium transition-colors">
               Ver todos <ArrowRight className="h-4 w-4" />
             </Link>
           </CardHeader>
           <CardContent>
             {recent.length === 0 ? (
-              <p className="text-slate-400 text-center py-4">No hay presupuestos aún</p>
+              <div className="text-center py-8">
+                <FileText className="h-12 w-12 text-slate-200 mx-auto mb-3" />
+                <p className="text-slate-400">No hay presupuestos aún</p>
+                <Link 
+                  href="/presupuestos/nuevo" 
+                  className="text-sm text-sky-600 hover:text-sky-700 font-medium mt-2 inline-block"
+                >
+                  Crear el primero
+                </Link>
+              </div>
             ) : (
               <div className="space-y-3">
                 {recent.map((p) => (
                   <Link
                     key={p.numero}
                     href={`/presupuestos/${p.numero.replace('PRE-', '')}`}
-                    className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors"
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-all group"
                   >
-                    <div>
-                      <p className="font-medium">{p.numero}</p>
-                      <p className="text-sm text-slate-500">{p.cliente.nombre}</p>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                        p.estado === 'ENVIADO' ? 'bg-sky-50' : 
+                        p.estado === 'ACEPTADO' ? 'bg-green-50' :
+                        p.estado === 'RECHAZADO' ? 'bg-red-50' :
+                        'bg-slate-50'
+                      }`}>
+                        <FileText className={`h-5 w-5 ${
+                          p.estado === 'ENVIADO' ? 'text-sky-500' : 
+                          p.estado === 'ACEPTADO' ? 'text-green-500' :
+                          p.estado === 'RECHAZADO' ? 'text-red-500' :
+                          'text-slate-400'
+                        }`} />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-slate-700">{p.numero}</p>
+                        <p className="text-sm text-slate-500">{p.cliente.nombre}</p>
+                      </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">$AR {p.total.toFixed(2)}</p>
+                      <p className="font-bold text-slate-800">{formatCurrency(p.total)}</p>
                       <p className="text-xs text-slate-400">
-                        {new Date(p.createdAt).toLocaleDateString('es-MX')}
+                        {new Date(p.createdAt).toLocaleDateString('es-AR', {
+                          day: 'numeric',
+                          month: 'short',
+                        })}
                       </p>
                     </div>
                   </Link>
@@ -157,31 +208,48 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="animate-slide-up" style={{ animationDelay: '250ms' }}>
           <CardHeader>
-            <CardTitle>Acciones Rápidas</CardTitle>
+            <CardTitle className="text-lg font-semibold">Acciones Rápidas</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <Link
               href="/presupuestos/nuevo"
-              className="flex items-center justify-between p-4 rounded-lg bg-cyan-50 hover:bg-cyan-100 transition-colors"
+              className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-white shadow-md hover:shadow-lg transition-all group"
             >
-              <span className="font-medium text-cyan-700">Nuevo Presupuesto</span>
-              <ArrowRight className="h-5 w-5 text-cyan-600" />
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-white/20">
+                  <Plus className="h-5 w-5" />
+                </div>
+                <span className="font-semibold">Nuevo Presupuesto</span>
+              </div>
+              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
+            
             <Link
-              href="/clientes/nuevo"
-              className="flex items-center justify-between p-4 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors"
+              href="/clientes?new=true"
+              className="flex items-center justify-between p-4 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-100 transition-all group"
             >
-              <span className="font-medium">Agregar Cliente</span>
-              <ArrowRight className="h-5 w-5 text-slate-400" />
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-white">
+                  <Users className="h-5 w-5 text-orange-500" />
+                </div>
+                <span className="font-medium text-slate-700">Agregar Cliente</span>
+              </div>
+              <ArrowRight className="h-5 w-5 text-orange-400 group-hover:translate-x-1 transition-transform" />
             </Link>
+            
             <Link
-              href="/productos/nuevo"
-              className="flex items-center justify-between p-4 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors"
+              href="/productos?new=true"
+              className="flex items-center justify-between p-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-100 transition-all group"
             >
-              <span className="font-medium">Agregar Producto</span>
-              <ArrowRight className="h-5 w-5 text-slate-400" />
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-white">
+                  <Package className="h-5 w-5 text-slate-500" />
+                </div>
+                <span className="font-medium text-slate-700">Agregar Producto</span>
+              </div>
+              <ArrowRight className="h-5 w-5 text-slate-400 group-hover:translate-x-1 transition-transform" />
             </Link>
           </CardContent>
         </Card>

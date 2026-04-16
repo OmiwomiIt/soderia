@@ -3,15 +3,15 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]',
   {
     variants: {
       variant: {
-        default: 'bg-sky-500 text-white hover:bg-sky-600 shadow-sm',
-        secondary: 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm',
-        outline: 'border-2 border-slate-200 bg-transparent hover:bg-slate-50 text-slate-700',
+        default: 'bg-sky-500 text-white hover:bg-sky-600 shadow-md hover:shadow-lg hover:shadow-sky-500/20',
+        secondary: 'bg-orange-500 text-white hover:bg-orange-600 shadow-md hover:shadow-lg hover:shadow-orange-500/20',
+        outline: 'border-2 border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700',
         ghost: 'hover:bg-slate-100 text-slate-700',
-        destructive: 'bg-red-500 text-white hover:bg-red-600',
+        destructive: 'bg-red-500 text-white hover:bg-red-600 shadow-md',
       },
       size: {
         default: 'h-11 px-5 py-2',

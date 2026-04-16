@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Modal } from '@/components/ui/modal';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Search, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, User, Phone, Mail, MapPin } from 'lucide-react';
 
 interface Cliente {
   id: number;
@@ -36,9 +36,16 @@ export default function ClientesPage() {
     });
   }, []);
 
+  useEffect(() => {
+    if (router.query?.new === 'true') {
+      setShowModal(true);
+    }
+  }, [router.query]);
+
   const filtered = clientes.filter(c => 
     c.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    c.email?.toLowerCase().includes(search.toLowerCase())
+    c.email?.toLowerCase().includes(search.toLowerCase()) ||
+    c.telefono?.includes(search)
   );
 
   async function handleSave() {
@@ -80,17 +87,17 @@ export default function ClientesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Clientes</h1>
-          <p className="text-slate-500">Gestiona tus clientes</p>
+          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Clientes</h1>
+          <p className="text-slate-500 mt-1">Gestiona tus clientes</p>
         </div>
         <Button onClick={() => { setEditId(null); setForm({ nombre: '', email: '', telefono: '', direccion: '' }); setShowModal(true); }}>
           <Plus className="h-4 w-4 mr-2" /> Nuevo Cliente
@@ -105,38 +112,94 @@ export default function ClientesPage() {
               placeholder="Buscar clientes..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-white"
             />
           </div>
 
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Teléfono</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+              <TableRow className="bg-slate-50">
+                <TableHead className="font-semibold">Cliente</TableHead>
+                <TableHead className="font-semibold">Contacto</TableHead>
+                <TableHead className="font-semibold">Dirección</TableHead>
+                <TableHead className="text-right font-semibold">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-slate-400">
-                    No hay clientes
+                  <TableCell colSpan={4} className="text-center py-12">
+                    <User className="h-12 w-12 text-slate-200 mx-auto mb-3" />
+                    <p className="text-slate-400 font-medium">No hay clientes</p>
+                    <Button 
+                      variant="link" 
+                      onClick={() => setShowModal(true)}
+                      className="text-sky-600 mt-2"
+                    >
+                      Agregar el primero
+                    </Button>
                   </TableCell>
                 </TableRow>
               ) : (
-                filtered.map(cliente => (
-                  <TableRow key={cliente.id}>
-                    <TableCell className="font-medium">{cliente.nombre}</TableCell>
-                    <TableCell>{cliente.email || '-'}</TableCell>
-                    <TableCell>{cliente.telefono || '-'}</TableCell>
+                filtered.map((cliente, idx) => (
+                  <TableRow 
+                    key={cliente.id} 
+                    className="hover:bg-slate-50 transition-colors"
+                    style={{ animationDelay: `${idx * 20}ms` }}
+                  >
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center">
+                          <User className="h-5 w-5 text-sky-600" />
+                        </div>
+                        <span className="font-semibold text-slate-700">{cliente.nombre}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        {cliente.email && (
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Mail className="h-3.5 w-3.5 text-slate-400" />
+                            <span>{cliente.email}</span>
+                          </div>
+                        )}
+                        {cliente.telefono && (
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Phone className="h-3.5 w-3.5 text-slate-400" />
+                            <span>{cliente.telefono}</span>
+                          </div>
+                        )}
+                        {!cliente.email && !cliente.telefono && (
+                          <span className="text-slate-400 text-sm">-</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {cliente.direccion ? (
+                        <div className="flex items-center gap-2 text-sm text-slate-600 max-w-[200px]">
+                          <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                          <span className="truncate">{cliente.direccion}</span>
+                        </div>
+                      ) : (
+                        <span className="text-slate-400 text-sm">-</span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => openEdit(cliente)}>
+                      <div className="flex justify-end gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => openEdit(cliente)}
+                          className="hover:bg-slate-100"
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(cliente.id)}>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => handleDelete(cliente.id)}
+                          className="hover:bg-red-50"
+                        >
                           <Trash2 className="h-4 w-4 text-red-500" />
                         </Button>
                       </div>
@@ -150,43 +213,55 @@ export default function ClientesPage() {
       </Card>
 
       <Modal open={showModal} onClose={() => setShowModal(false)} title={editId ? 'Editar Cliente' : 'Nuevo Cliente'}>
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
-            <Label>Nombre *</Label>
+            <Label className="text-slate-700 font-medium">Nombre *</Label>
             <Input
               value={form.nombre}
               onChange={e => setForm({ ...form, nombre: e.target.value })}
               placeholder="Nombre del cliente"
+              className="mt-1.5 bg-white"
             />
           </div>
+          
           <div>
-            <Label>Email</Label>
+            <Label className="text-slate-700 font-medium">Email</Label>
             <Input
               type="email"
               value={form.email}
               onChange={e => setForm({ ...form, email: e.target.value })}
               placeholder="email@ejemplo.com"
+              className="mt-1.5 bg-white"
             />
           </div>
+          
           <div>
-            <Label>Teléfono</Label>
+            <Label className="text-slate-700 font-medium">Teléfono</Label>
             <Input
               value={form.telefono}
               onChange={e => setForm({ ...form, telefono: e.target.value })}
               placeholder="Teléfono"
+              className="mt-1.5 bg-white"
             />
           </div>
+          
           <div>
-            <Label>Dirección</Label>
+            <Label className="text-slate-700 font-medium">Dirección</Label>
             <Input
               value={form.direccion}
               onChange={e => setForm({ ...form, direccion: e.target.value })}
               placeholder="Dirección"
+              className="mt-1.5 bg-white"
             />
           </div>
-          <div className="flex justify-end gap-2 pt-4">
+          
+          <div className="flex justify-end gap-3 pt-4">
             <Button variant="outline" onClick={() => setShowModal(false)}>Cancelar</Button>
-            <Button onClick={handleSave} disabled={saving || !form.nombre.trim()}>
+            <Button 
+              onClick={handleSave} 
+              disabled={saving || !form.nombre.trim()}
+              className="btn-primary"
+            >
               {saving ? 'Guardando...' : 'Guardar'}
             </Button>
           </div>
