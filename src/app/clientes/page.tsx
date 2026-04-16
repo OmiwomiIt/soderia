@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +21,6 @@ interface Cliente {
 
 export default function ClientesPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -36,13 +35,6 @@ export default function ClientesPage() {
       setLoading(false);
     });
   }, []);
-
-  useEffect(() => {
-    if (searchParams.get('new') === 'true') {
-      setShowModal(true);
-      router.replace('/clientes');
-    }
-  }, [searchParams, router]);
 
   const filtered = clientes.filter(c => 
     c.nombre.toLowerCase().includes(search.toLowerCase()) ||
